@@ -1,0 +1,896 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Moonlight Boba Shop</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Cormorant+Garamond:wght@400;600&display=swap">
+    <style>
+        :root {
+            --main-bg-color: #e6f0ff;
+            --accent-color: #84a9d9;
+            --dark-accent: #5d81b4;
+            --text-color: #2a3c57;
+            --light-text: #f0f7ff;
+            --light-accent: #c6d8f0;
+        }
+        
+        body {
+            font-family: 'Cormorant Garamond', serif;
+            background-color: var(--main-bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'%3E%3Ccircle cx='15' cy='15' r='2' fill='%23c6d8f0' opacity='0.3'/%3E%3Ccircle cx='50' cy='50' r='1.5' fill='%23c6d8f0' opacity='0.5'/%3E%3Ccircle cx='85' cy='85' r='2.5' fill='%23c6d8f0' opacity='0.3'/%3E%3Ccircle cx='30' cy='70' r='1' fill='%23c6d8f0' opacity='0.4'/%3E%3C/svg%3E");
+        }
+        
+        .music-widget {
+            background-color: var(--dark-accent);
+            color: var(--light-text);
+            padding: 10px 15px;
+            text-align: center;
+            font-family: 'Playfair Display', serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+            position: relative;
+            z-index: 100;
+        }
+        
+        .music-widget button {
+            background-color: transparent;
+            color: var(--light-text);
+            border: 1px solid var(--light-text);
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: all 0.3s ease;
+        }
+        
+        .music-widget button:hover {
+            background-color: var(--light-text);
+            color: var(--dark-accent);
+        }
+        
+        #nowPlaying {
+            font-style: italic;
+            flex-grow: 1;
+        }
+        
+        header {
+            background-color: var(--accent-color);
+            color: var(--light-text);
+            padding: 30px;
+            text-align: center;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            background-image: linear-gradient(to right, var(--accent-color), var(--dark-accent));
+            position: relative;
+            overflow: hidden;
+        }
+
+        header::after {
+            content: '';
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background-color: var(--light-accent);
+            box-shadow: 0 0 20px 10px rgba(198, 216, 240, 0.6);
+            opacity: 0.8;
+        }
+
+        header h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 3.5rem;
+            margin: 0;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+            letter-spacing: 1px;
+        }
+
+        .game-container {
+            width: 90%;
+            max-width: 1200px;
+            margin: 30px auto;
+            background-color: rgba(255, 255, 255, 0.9);
+            border-radius: 15px;
+            box-shadow: 0 5px 25px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            position: relative;
+            overflow: hidden;
+            border: 1px solid var(--light-accent);
+        }
+
+        .game-container::after {
+            content: '';
+            position: absolute;
+            bottom: -50px;
+            right: -50px;
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            background-color: var(--light-accent);
+            opacity: 0.1;
+        }
+
+        .role-selection, .order-section, .bobarista-section {
+            text-align: center;
+        }
+
+        .role-selection button, .order-section button, #triviaAnswer + button {
+            background-color: var(--accent-color);
+            color: var(--light-text);
+            padding: 12px 25px;
+            font-size: 18px;
+            border: none;
+            cursor: pointer;
+            border-radius: 8px;
+            margin: 10px;
+            transition: all 0.3s ease;
+            font-family: 'Cormorant Garamond', serif;
+            font-weight: 600;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .role-selection button:hover, .order-section button:hover, #triviaAnswer + button:hover {
+            background-color: var(--dark-accent);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
+        }
+
+        .order-section {
+            margin-top: 30px;
+        }
+
+        .order-section .menu-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 25px;
+            margin-top: 30px;
+        }
+
+        .menu-item {
+            background-color: white;
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+            transition: transform 0.3s ease;
+            border: 1px solid var(--light-accent);
+            overflow: hidden;
+            position: relative;
+        }
+
+        .menu-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .menu-item img {
+            width: 100%;
+            max-height: 200px;
+            object-fit: contain;
+            border-radius: 8px;
+            margin-bottom: 15px;
+        }
+
+        .menu-item button {
+            background-color: var(--accent-color);
+            color: var(--light-text);
+            padding: 10px;
+            font-size: 16px;
+            border: none;
+            cursor: pointer;
+            border-radius: 8px;
+            width: 90%;
+            transition: all 0.3s ease;
+            margin-top: 10px;
+        }
+
+        .menu-item button:hover {
+            background-color: var(--dark-accent);
+        }
+
+        input[type="text"] {
+            padding: 12px;
+            border: 1px solid var(--light-accent);
+            border-radius: 8px;
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 16px;
+            margin: 10px 0;
+            width: 250px;
+        }
+
+        .order-status {
+            margin-top: 20px;
+            font-size: 1.2rem;
+            color: var(--text-color);
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .bobarista-game {
+            margin-top: 30px;
+        }
+
+        .qte-section, .topping-section {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            margin-top: 20px;
+            padding: 20px;
+            background-color: rgba(198, 216, 240, 0.3);
+            border-radius: 12px;
+        }
+
+        .qte-button, .randomButton {
+            background-color: var(--dark-accent);
+            color: white;
+            font-size: 18px;
+            padding: 15px 30px;
+            cursor: pointer;
+            border: none;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            font-family: 'Cormorant Garamond', serif;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .qte-button:hover, .randomButton:hover {
+            background-color: var(--text-color);
+            transform: scale(1.03);
+        }
+
+        .randomButton {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 10;
+        }
+
+        .footer {
+            background-color: var(--dark-accent);
+            color: var(--light-text);
+            text-align: center;
+            padding: 25px;
+            margin-top: 40px;
+            font-family: 'Playfair Display', serif;
+            background-image: linear-gradient(to right, var(--dark-accent), var(--accent-color));
+        }
+
+        #roleDescription, p {
+            font-size: 1.2rem;
+            line-height: 1.6;
+        }
+
+        h2, h3 {
+            font-family: 'Playfair Display', serif;
+            color: var(--dark-accent);
+        }
+
+        #bobaristaTrivia, #bobaristaGame {
+            background-color: rgba(255, 255, 255, 0.8);
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+            margin-top: 30px;
+        }
+
+        #triviaQuestion {
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin: 20px 0;
+        }
+
+        #orderDetails {
+            background-color: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
+        }
+
+        #bobaristaStatus {
+            font-weight: 600;
+            color: var(--dark-accent);
+        }
+
+        @media (max-width: 768px) {
+            .order-section .menu-grid {
+                grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            }
+            
+            header h1 {
+                font-size: 2.5rem;
+            }
+            
+            .game-container {
+                width: 95%;
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="music-widget">
+    <span id="nowPlaying">🎵 Now Playing: </span>
+    <button onclick="togglePause()"><i class="fas fa-pause"></i></button>
+    <button onclick="skipSong()"><i class="fas fa-forward"></i></button>
+    <audio id="audioPlayer" src="" autoplay></audio>
+</div>
+
+<header>
+    <h1>Moonlight Boba Shop</h1>
+</header>
+
+<div class="game-container">
+    <div class="role-selection">
+        <p>Select your role in the moonlit tea shop:</p>
+        <button onclick="startAsCustomer()">Be a Customer</button>
+        <button onclick="startAsBobarista()">Be a Bobarista</button>
+    </div>
+
+    <div id="gameArea" class="hidden">
+        <div id="roleDescription"></div>
+        
+        <div id="customerOrder" class="hidden order-section">
+            <h2>Choose your magical brew:</h2>
+            <!-- Grid Layout for Menu -->
+            <div class="menu-grid">
+                <!-- Each menu item with an image placeholder -->
+                <div class="menu-item">
+                    <img src="Milk-Foam-Oolong-Tea.png" alt="Oolong Tea">
+                    <h3>Oolong Tea</h3>
+                    <button onclick="placeOrder('Oolong Tea')">Select</button>
+                </div>
+                <div class="menu-item">
+                    <img src="奶蓋綠茶-Milk-Foam-Green-Tea-web.png" alt="Green Tea">
+                    <h3>Green Tea</h3>
+                    <button onclick="placeOrder('Green Tea')">Select</button>
+                </div>
+                <div class="menu-item">
+                    <img src="Milk-Foam-Black-Tea.png" alt="Black Tea">
+                    <h3>Black Tea</h3>
+                    <button onclick="placeOrder('Black Tea')">Select</button>
+                </div>
+                <div class="menu-item">
+                    <img src="奶蓋冬瓜-Milk-Foam-Wintermelon-web.png" alt="Wintermelon">
+                    <h3>Wintermelon</h3>
+                    <button onclick="placeOrder('Wintermelon')">Select</button>
+                </div>
+                <div class="menu-item">
+                    <img src="Milk-Foam-Earl-Grey-Tea.png" alt="Earl Grey Tea">
+                    <h3>Earl Grey Tea</h3>
+                    <button onclick="placeOrder('Earl Grey Tea')">Select</button>
+                </div>
+                <div class="menu-item">
+                    <img src="黑糖奶茶-Brown-Sugar-Milk-Tea-web.png" alt="Brown Sugar Milk Tea">
+                    <h3>Brown Sugar Milk Tea</h3>
+                    <button onclick="placeOrder('Brown Sugar Milk Tea')">Select</button>
+                </div>
+                <div class="menu-item">
+                    <img src="Matcha-Tea-Latte-2.png" alt="Matcha Milk Tea">
+                    <h3>Matcha Milk Tea</h3>
+                    <button onclick="placeOrder('Matcha Milk Tea')">Select</button>
+                </div>
+                <div class="menu-item">
+                    <img src="Taro-Slush-web.png" alt="Taro Milk Tea">
+                    <h3>Taro Milk Tea</h3>
+                    <button onclick="placeOrder('Taro Milk Tea')">Select</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="bobaristaTrivia" class="hidden">
+            <h2>Brew Master's Knowledge Test</h2>
+            <p>Answer these trivia questions to prove your expertise:</p>
+            <p id="triviaQuestion"></p>
+            <input type="text" id="triviaAnswer" placeholder="Your answer">
+            <button onclick="nextTriviaQuestion()">Submit Answer</button>
+        </div>
+
+        <div id="bobaristaGame" class="hidden bobarista-game">
+            <h2>Brew Master's Station</h2>
+            <p>A customer under the moonlight awaits their order!</p>
+            <div id="orderDetails"></div>
+            <div id="qteSection" class="hidden qte-section">
+                <p>Hold the button to brew the perfect tea!</p>
+                <button id="holdButton" class="qte-button" onclick="holdTea()">Hold to Add Tea (10 seconds)</button>
+            </div>
+            <div id="toppingSection" class="hidden topping-section">
+                <p>Click the floating button to add magical toppings!</p>
+            </div>
+            <p id="bobaristaStatus"></p>
+        </div>
+    </div>
+</div>
+
+<div class="footer">
+    <p>&copy; 2025 Moonlight Boba Shop | Under the Stars</p>
+</div>
+
+<script>
+// Comprehensive drink list
+const drinks = [
+    'Oolong Tea',
+    'Green Tea',
+    'Black Tea',
+    'Wintermelon',
+    'Earl Grey Tea',
+    'Brown Sugar Milk Tea',
+    'Matcha Milk Tea',
+    'Taro Milk Tea',
+    'Thai Tea',
+    'Honey Lemon Tea',
+    'Mango Green Tea',
+    'Passion Fruit Tea',
+    'Peach Tea',
+    'Grapefruit Tea',
+    'Lychee Tea',
+    'Apple Tea',
+    'Jasmine Green Tea',
+    'Strawberry Tea',
+    'Lemonade Tea',
+    'Aloe Vera Tea',
+    'Avocado Milk Tea',
+    'Pineapple Tea',
+    'Coconut Tea'
+];
+
+// Available toppings
+const toppings = [
+    'Pearl',
+    'White Pearl',
+    'Coconut Jelly',
+    'Herbal Jelly',
+    'Pudding',
+    'Aiyu',
+    'Double Pearl',
+    '3J (Pearl, Herbal Jelly, Pudding)'
+];
+
+// Sweetness levels
+const sweetnessLevels = ['No Sugar', '30% Sweet', '50% Sweet', '70% Sweet', '100% Sweet', 'Extra Sweet'];
+
+// Cup sizes
+const cupSizes = ['Small', 'Medium', 'Large', 'Extra Large'];
+
+// Game state variables
+let currentOrder = {};
+let customerScore = 0;
+let bobaristaScore = 0;
+let difficulty = 'easy';
+let triviaQuestions = [
+    { question: "What is the main ingredient in Milk Foam?", answer: "cream" },
+    { question: "Which fruit is used in 'Mango Green Tea'?", answer: "mango" },
+    { question: "What type of tea is used in 'Earl Grey Milk Tea'?", answer: "black" },
+    { question: "Which topping is known for its chewy texture?", answer: "pearl" },
+    { question: "What is the base flavor of 'Taro Milk Tea'?", answer: "taro" },
+    { question: "What does '3J' topping combination include?", answer: "pearl herbal jelly pudding" },
+    { question: "What plant are traditional boba pearls made from?", answer: "tapioca" },
+    { question: "What country did bubble tea originate from?", answer: "taiwan" }
+];
+let currentTriviaIndex = 0;
+let triviaCorrect = 0;
+let bobaristaOrders = [];
+let customerOrders = [];
+let gameOver = false;
+let teaHoldTimer = null;
+let randomButtonTimer = null;
+let currentQTE = null;
+let orderNumber = 1;
+
+// Initialize the game
+function initGame() {
+    // Reset game state
+    gameOver = false;
+    triviaCorrect = 0;
+    currentTriviaIndex = 0;
+    bobaristaOrders = [];
+    customerOrders = [];
+    bobaristaScore = 0;
+    
+    // Hide all sections
+    document.getElementById("customerOrder").classList.add("hidden");
+    document.getElementById("bobaristaTrivia").classList.add("hidden");
+    document.getElementById("bobaristaGame").classList.add("hidden");
+    document.getElementById("qteSection").classList.add("hidden");
+    document.getElementById("toppingSection").classList.add("hidden");
+    
+    // Show role selection
+    document.getElementById("gameArea").classList.remove("hidden");
+    document.getElementById("roleDescription").textContent = "Select your role in the moonlit tea shop:";
+    
+    // Clear any existing timers
+    if (teaHoldTimer) clearTimeout(teaHoldTimer);
+    if (randomButtonTimer) clearTimeout(randomButtonTimer);
+    if (currentQTE) clearTimeout(currentQTE);
+    
+    // Remove any floating buttons
+    const floatingButtons = document.querySelectorAll('.randomButton');
+    floatingButtons.forEach(button => button.remove());
+    
+    // Create difficulty selection for bobarista
+    updateDifficultySettings();
+    
+    // Initialize console for logging
+    console.clear();
+    console.log("🌙 Welcome to Moonlight Boba Shop! 🌙");
+}
+
+// Update game difficulty settings
+function updateDifficultySettings() {
+    if (difficulty === 'easy') {
+        // Easy mode settings
+        triviaQuestions = triviaQuestions.slice(0, 6);
+    } else {
+        // Hard mode - use all questions and shorter QTE timers
+        triviaQuestions = triviaQuestions;
+    }
+}
+
+// Customer role functions
+function startAsCustomer() {
+    document.getElementById("roleDescription").textContent = "You're a customer in our moonlit tea shop! Please place your order.";
+    document.getElementById("customerOrder").classList.remove("hidden");
+    document.getElementById("gameArea").classList.remove("hidden");
+    console.log("👤 You are now a customer at Moonlight Boba Shop");
+}
+
+function placeOrder(drink) {
+    // Generate a random order
+    const sweetness = sweetnessLevels[Math.floor(Math.random() * sweetnessLevels.length)];
+    const topping = toppings[Math.floor(Math.random() * toppings.length)];
+    const size = cupSizes[Math.floor(Math.random() * cupSizes.length)];
+    
+    const order = {
+        id: customerOrders.length + 1,
+        drink: drink,
+        sweetness: sweetness,
+        topping: topping,
+        size: size,
+        timestamp: new Date()
+    };
+    
+    customerOrders.push(order);
+    
+    // Display order confirmation
+    alert(`Your order #${order.id}: ${size} ${sweetness} ${drink} with ${topping}. The tea master is brewing under the moonlight. It will take 10 seconds to prepare.`);
+    document.getElementById("roleDescription").textContent = `Your ${drink} is being prepared under the moonlight...`;
+    
+    console.log(`📝 Customer Order #${order.id}: ${size} ${sweetness} ${drink} with ${topping}`);
+    
+    // Simulate preparation time
+    setTimeout(() => {
+        alert(`Your ${drink} is ready! Enjoy your magical brew.`);
+        document.getElementById("roleDescription").textContent = `Your ${size} ${sweetness} ${drink} with ${topping} is ready! Enjoy your magical brew.`;
+        
+        // Option to place another order or leave
+        const orderAgain = confirm("Would you like to order something else?");
+        if (!orderAgain) {
+            alert("Thank you for visiting Moonlight Boba Shop! Come back soon!");
+            initGame();
+        }
+    }, 10000);
+}
+
+// Display all available drinks in the console for reference
+function showMenuForBobarista() {
+    console.log("🧋 AVAILABLE DRINKS:");
+    drinks.forEach((drink, index) => {
+        console.log(`${index + 1}. ${drink}`);
+    });
+    
+    console.log("\n🧋 AVAILABLE TOPPINGS:");
+    toppings.forEach((topping, index) => {
+        console.log(`${index + 1}. ${topping}`);
+    });
+    
+    console.log("\n🧋 SWEETNESS LEVELS:");
+    sweetnessLevels.forEach((level, index) => {
+        console.log(`${index + 1}. ${level}`);
+    });
+    
+    console.log("\n🧋 CUP SIZES:");
+    cupSizes.forEach((size, index) => {
+        console.log(`${index + 1}. ${size}`);
+    });
+}
+
+// Bobarista role functions
+function startAsBobarista() {
+    // Ask for difficulty
+    const difficultyChoice = confirm("Would you like to play in Hard mode? (Cancel for Easy mode)");
+    difficulty = difficultyChoice ? 'hard' : 'easy';
+    updateDifficultySettings();
+    
+    document.getElementById("roleDescription").textContent = `You're a Bobarista under the moonlight! First, prove your knowledge. (${difficulty.toUpperCase()} mode)`;
+    document.getElementById("bobaristaTrivia").classList.remove("hidden");
+    document.getElementById("gameArea").classList.remove("hidden");
+    
+    console.log(`🧑‍🍳 You are now a Bobarista at Moonlight Boba Shop (${difficulty.toUpperCase()} mode)`);
+    showMenuForBobarista();
+    
+    showTriviaQuestion();
+}
+
+function showTriviaQuestion() {
+    const question = triviaQuestions[currentTriviaIndex];
+    document.getElementById("triviaQuestion").textContent = `Question ${currentTriviaIndex + 1}/${triviaQuestions.length}: ${question.question}`;
+    document.getElementById("triviaAnswer").value = "";  // Clear previous answer
+}
+
+function nextTriviaQuestion() {
+    const userAnswer = document.getElementById("triviaAnswer").value.toLowerCase().trim();
+    const correctAnswer = triviaQuestions[currentTriviaIndex].answer;
+
+    const isCorrect = userAnswer === correctAnswer;
+    if (isCorrect) {
+        triviaCorrect++;
+        console.log(`✅ Correct answer! (${triviaCorrect}/${triviaQuestions.length})`);
+    } else {
+        console.log(`❌ Wrong answer! The correct answer was: "${correctAnswer}"`);
+    }
+
+    currentTriviaIndex++;
+
+    if (currentTriviaIndex < triviaQuestions.length) {
+        showTriviaQuestion();
+    } else {
+        const requiredToPass = 5;
+        if (triviaCorrect >= requiredToPass) {
+            console.log(`🎉 You passed the trivia quiz with ${triviaCorrect}/${triviaQuestions.length} correct answers!`);
+            document.getElementById("bobaristaTrivia").classList.add("hidden");
+            document.getElementById("bobaristaGame").classList.remove("hidden");
+            document.getElementById("bobaristaStatus").textContent = "Ready to take orders!";
+            takeOrder();
+        } else {
+            alert(`You failed the trivia quiz with ${triviaCorrect}/${triviaQuestions.length} correct answers. You needed at least ${requiredToPass} to pass. The moon's magic has faded. Game Over!`);
+            gameOver = true;
+            document.getElementById("bobaristaStatus").textContent = `Game Over! The moon's magic has faded. You only got ${triviaCorrect}/${triviaQuestions.length} trivia questions correct.`;
+            console.log(`💔 Game Over! You failed the trivia quiz with ${triviaCorrect}/${triviaQuestions.length} correct answers.`);
+        }
+    }
+}
+
+function takeOrder() {
+    if (gameOver) return;
+    
+    // Clear previous QTE elements
+    document.getElementById("qteSection").classList.add("hidden");
+    document.getElementById("toppingSection").classList.add("hidden");
+    
+    // Generate random order
+    currentOrder = {
+        id: orderNumber++,
+        drink: drinks[Math.floor(Math.random() * drinks.length)],
+        sweetness: sweetnessLevels[Math.floor(Math.random() * sweetnessLevels.length)],
+        topping: toppings[Math.floor(Math.random() * toppings.length)],
+        size: cupSizes[Math.floor(Math.random() * cupSizes.length)],
+        timestamp: new Date()
+    };
+    
+    // Display order details
+    document.getElementById("orderDetails").innerHTML = `
+        <strong>Order #${currentOrder.id}:</strong><br>
+        Drink: ${currentOrder.drink}<br>
+        Sweetness: ${currentOrder.sweetness}<br>
+        Topping: ${currentOrder.topping}<br>
+        Cup Size: ${currentOrder.size}
+    `;
+    
+    // Log to console
+    console.log(`\n🧋 New Customer Order #${currentOrder.id}!`);
+    console.log(`- Drink: ${currentOrder.drink}`);
+    console.log(`- Sweetness: ${currentOrder.sweetness}`);
+    console.log(`- Topping: ${currentOrder.topping}`);
+    console.log(`- Cup Size: ${currentOrder.size}`);
+    
+    document.getElementById("bobaristaStatus").textContent = `Taking order #${currentOrder.id}...`;
+    
+    // Show QTE section for preparing the tea
+    showQTESection();
+}
+
+function showQTESection() {
+    document.getElementById("qteSection").classList.remove("hidden");
+    const holdButton = document.getElementById("holdButton");
+    holdButton.disabled = false;
+    holdButton.textContent = `Hold to Add Tea (${currentOrder.drink}) - 10 seconds`;
+    holdButton.style.opacity = "1";
+}
+
+function holdTea() {
+    const holdDuration = 10000; // 10 seconds
+    const button = document.getElementById("holdButton");
+    button.disabled = true;
+    
+    // Start progress tracking
+    const startTime = Date.now();
+    let progress = 0;
+    
+    // Update the button text to show progress
+    const progressInterval = setInterval(() => {
+        const elapsed = Date.now() - startTime;
+        progress = Math.min(Math.floor((elapsed / holdDuration) * 100), 100);
+        button.textContent = `Brewing... ${progress}%`;
+        button.style.background = `linear-gradient(to right, var(--dark-accent) ${progress}%, var(--text-color) ${progress}%)`;
+    }, 100);
+    
+    teaHoldTimer = setTimeout(() => {
+        clearInterval(progressInterval);
+        document.getElementById("bobaristaStatus").textContent = `Tea brewed successfully! Now adding ${currentOrder.topping}...`;
+        button.textContent = "Brewing Complete!";
+        button.style.background = "var(--dark-accent)";
+        
+        console.log(`✅ Tea brewing complete for order #${currentOrder.id}`);
+        
+        // Proceed to adding toppings
+        setTimeout(() => {
+            document.getElementById("toppingSection").classList.remove("hidden");
+            addToppings();
+        }, 1000);
+    }, holdDuration);
+}
+
+function addToppings() {
+    // Create a random button for the topping
+    const toppingSection = document.getElementById("toppingSection");
+    toppingSection.innerHTML = `<p>Quickly! Click on the "${currentOrder.topping}" button to add it!</p>`;
+    
+    // Create random button for topping
+    const randomButton = document.createElement("button");
+    randomButton.textContent = `Add ${currentOrder.topping}`;
+    randomButton.classList.add("randomButton");
+    
+    // QTE timer duration based on difficulty
+    const qteTime = difficulty === 'easy' ? 2000 : 1500; // 2 seconds for easy, 1.5 for hard
+    
+    randomButton.onclick = () => {
+        clearTimeout(currentQTE);
+        randomButton.style.display = 'none';
+        
+        // Calculate score for perfect order
+        const orderScore = 100;
+        bobaristaScore += orderScore;
+        
+        document.getElementById("bobaristaStatus").textContent = `Order #${currentOrder.id} completed perfectly! +${orderScore} points (Total: ${bobaristaScore})`;
+        console.log(`✅ Added ${currentOrder.topping} to order #${currentOrder.id}`);
+        console.log(`✨ Order #${currentOrder.id} completed! Score: +${orderScore} (Total: ${bobaristaScore})`);
+        
+        // Complete order and save it
+        const completedOrder = {
+            ...currentOrder,
+            completed: true,
+            score: orderScore
+        };
+        bobaristaOrders.push(completedOrder);
+        
+        // Show order completion feedback
+        setTimeout(() => {
+            alert(`Order #${currentOrder.id} complete! The customer is enjoying their magical brew.`);
+            
+            // Take next order after a short delay
+            setTimeout(() => {
+                takeOrder();
+            }, 1500);
+        }, 500);
+    };
+    
+    // Add to body and position randomly
+    document.body.appendChild(randomButton);
+    const maxX = window.innerWidth - 200;
+    const maxY = window.innerHeight - 100;
+    randomButton.style.top = `${Math.random() * maxY}px`;
+    randomButton.style.left = `${Math.random() * maxX}px`;
+    randomButton.style.display = 'block';
+    
+    // Set timeout for QTE
+    currentQTE = setTimeout(() => {
+        // Failed to click in time
+        randomButton.style.display = 'none';
+        
+        if (bobaristaScore <= 0) {
+            // Game over - fired for incompetence
+            gameOver = true;
+            document.getElementById("bobaristaStatus").textContent = "Game Over! You've been fired for incompetence!";
+            alert("You've been fired for incompetence! Game Over!");
+            console.log("💔 Game Over! You've been fired for incompetence!");
+            
+            // Return to main menu after delay
+            setTimeout(initGame, 3000);
+        } else {
+            // Failed but can continue
+            document.getElementById("bobaristaStatus").textContent = `You failed to add the topping in time! The customer is disappointed. (-50 points)`;
+            bobaristaScore = Math.max(0, bobaristaScore - 50);
+            console.log(`❌ Failed to add ${currentOrder.topping} in time! (-50 points, Total: ${bobaristaScore})`);
+            
+            // Take next order after a short delay
+            setTimeout(() => {
+                takeOrder();
+            }, 3000);
+        }
+    }, qteTime);
+    
+    console.log(`⏱️ QTE started: Add ${currentOrder.topping} (${qteTime/1000} seconds)`);
+}
+
+// Music player functions
+const playlist = [
+    { title: "Super Shy - NewJeans", file: "supershy.mp3" },
+    { title: "Magnetic - ILLIT", file: "magnetic.mp3" },
+    { title: "ANTIFRAGILE - LE SSERAFIM", file: "antifragile.mp3" },
+    { title: "Cupid - FIFTY FIFTY", file: "cupid.mp3" },
+];
+
+let currentSongIndex = 0;
+let isPaused = false;
+
+function updateNowPlaying() {
+    const song = playlist[currentSongIndex];
+    const audio = document.getElementById("audioPlayer");
+    document.getElementById("nowPlaying").textContent = `🎵 Now Playing: ${song.title}`;
+    audio.src = song.file;
+    if (!isPaused) {
+        audio.play().catch(e => {
+            console.log("Audio playback error:", e);
+            // Handle autoplay restrictions
+        });
+    }
+}
+
+function togglePause() {
+    const audio = document.getElementById("audioPlayer");
+    isPaused = !isPaused;
+    const btn = document.querySelector(".music-widget button");
+    btn.innerHTML = isPaused ? '<i class="fas fa-play"></i>' : '<i class="fas fa-pause"></i>';
+    isPaused ? audio.pause() : audio.play();
+}
+
+function skipSong() {
+    currentSongIndex = (currentSongIndex + 1) % playlist.length;
+    isPaused = false;
+    updateNowPlaying();
+    document.querySelector(".music-widget button").innerHTML = '<i class="fas fa-pause"></i>';
+}
+
+// Event handlers
+document.addEventListener("DOMContentLoaded", function() {
+    initGame();
+    updateNowPlaying();
+    
+    // Add event listener for audio end
+    document.getElementById("audioPlayer").addEventListener("ended", skipSong);
+    
+    // Add event listener for keyboard input (for orders)
+    document.addEventListener("keydown", function(event) {
+        if (event.key === "Enter" && document.getElementById("triviaAnswer") === document.activeElement) {
+            nextTriviaQuestion();
+        }
+    });
+});
+
+// Clean up any possible memory leaks
+window.addEventListener('beforeunload', function() {
+    if (teaHoldTimer) clearTimeout(teaHoldTimer);
+    if (randomButtonTimer) clearTimeout(randomButtonTimer);
+    if (currentQTE) clearTimeout(currentQTE);
+});
+</script>
+
+</body>
+</html>
