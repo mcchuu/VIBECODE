@@ -1,0 +1,135 @@
+# Moonlight Boba Shop - Deployment Document
+
+## Overview
+Moonlight Boba Shop is a web-based interactive game where users can role-play as either a customer ordering boba tea or as a "bobarista" (boba barista) preparing orders. The game features a trivia challenge, quick-time events, and an immersive moonlight-themed interface.
+
+## System Requirements
+- Modern web browser (Chrome, Firefox, Safari, or Edge)
+- JavaScript enabled
+- Audio playback capabilities (for background music)
+- Screen resolution of at least 768px width (mobile-responsive but best experienced on desktop)
+
+## Deployment Instructions
+
+### Option 1: Local Deployment
+1. **Save the HTML file:**
+   - Save the entire HTML content as `index.html`
+   - Create a folder to store the project files
+
+2. **Add image assets:**
+   - Create an `images` folder in the same directory as the HTML file
+   - Obtain the following image files referenced in the code:
+     - Milk-Foam-Oolong-Tea.png
+     - 奶蓋綠茶-Milk-Foam-Green-Tea-web.png
+     - Milk-Foam-Black-Tea.png
+     - 奶蓋冬瓜-Milk-Foam-Wintermelon-web.png
+     - Milk-Foam-Earl-Grey-Tea.png
+     - 黑糖奶茶-Brown-Sugar-Milk-Tea-web.png
+     - Matcha-Tea-Latte-2.png
+     - Taro-Slush-web.png
+   - Place these images in the `images` folder
+
+3. **Add audio files:**
+   - Create an `audio` folder in the same directory as the HTML file
+   - Add the following MP3 files:
+     - supershy.mp3
+     - magnetic.mp3
+     - antifragile.mp3
+     - cupid.mp3
+   - Place these audio files in the `audio` folder
+
+4. **Open the game:**
+   - Double-click the HTML file to open it in your default web browser
+   - Alternatively, use a local development server like Live Server in VS Code
+
+### Option 2: Web Server Deployment
+1. **Upload files to web server:**
+   - Upload the HTML file, image folder, and audio folder to your web hosting service
+   - Ensure that the file structure is maintained
+
+2. **Configure MIME types:**
+   - Ensure your web server is configured to serve the correct MIME types for:
+     - .html files (text/html)
+     - .png files (image/png)
+     - .mp3 files (audio/mpeg)
+
+3. **Access the game:**
+   - Navigate to the URL where the index.html file is located
+   - For example: https://yourdomain.com/moonlight-boba/index.html
+
+## File Structure
+```
+moonlight-boba/
+├── index.html
+├── images/
+│   ├── Milk-Foam-Oolong-Tea.png
+│   ├── 奶蓋綠茶-Milk-Foam-Green-Tea-web.png
+│   ├── Milk-Foam-Black-Tea.png
+│   ├── 奶蓋冬瓜-Milk-Foam-Wintermelon-web.png
+│   ├── Milk-Foam-Earl-Grey-Tea.png
+│   ├── 黑糖奶茶-Brown-Sugar-Milk-Tea-web.png
+│   ├── Matcha-Tea-Latte-2.png
+│   └── Taro-Slush-web.png
+└── audio/
+    ├── supershy.mp3
+    ├── magnetic.mp3
+    ├── antifragile.mp3
+    └── cupid.mp3
+```
+
+## URL Path Updates
+If your file structure differs from the above, you'll need to update the file paths in the HTML code:
+
+1. **Update image paths:**
+   - Locate all instances of image references in the HTML
+   - Update paths to include the correct folder structure (e.g., `images/Milk-Foam-Oolong-Tea.png`)
+
+2. **Update audio paths:**
+   - Locate the `updateNowPlaying()` function in the JavaScript
+   - Update the audio file references to include the correct folder structure (e.g., `audio/supershy.mp3`)
+
+## Game Instructions
+
+### Playing as a Customer
+1. Click "Be a Customer" on the initial screen
+2. Browse the menu of available boba tea options
+3. Click "Select" on your desired drink
+4. The system will automatically generate random customizations for your order
+5. Wait for the preparation time (10 seconds)
+6. Receive your order and choose to order again or exit
+
+### Playing as a Bobarista
+1. Click "Be a Bobarista" on the initial screen
+2. Choose difficulty level (Easy or Hard)
+3. Complete the tea knowledge trivia questions
+   - Need at least 5 correct answers to continue
+4. Receive customer orders
+5. Complete the Quick Time Events (QTEs):
+   - Hold the button to brew tea for the full duration (10 seconds)
+   - Click on the moving topping button before time runs out
+6. Complete as many orders as possible to increase your score
+
+## Audio Controls
+- The music player at the top of the page controls background music
+- Use the pause/play button to toggle audio playback
+- Use the forward button to skip to the next song
+
+## Troubleshooting
+
+### Audio Not Playing
+- Check if your browser has autoplay blocked
+- Click on the play button in the music widget
+- Ensure volume is turned up on your device
+
+### Images Not Loading
+- Verify that image files are in the correct location
+- Check file names for exact spelling and case sensitivity
+- Try refreshing the browser cache (Ctrl+F5 or Cmd+Shift+R)
+
+### Game Responsiveness Issues
+- The game is optimized for screens 768px and wider
+- On smaller screens, some elements may be repositioned
+- Try landscape orientation on mobile devices for better experience
+
+## Contact & Support
+For issues or questions about deploying this game, please contact [your contact information].
